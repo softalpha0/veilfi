@@ -1,0 +1,13 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib", "node_modules"]
+solc_version = "0.8.28"
+remappings = [
+  "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+  "@iexec-nox/nox-protocol-contracts/=node_modules/@iexec-nox/nox-protocol-contracts/",
+  "@iexec-nox/nox-confidential-contracts/=node_modules/@iexec-nox/nox-confidential-contracts/",
+  "encrypted-types/=node_modules/encrypted-types/",
+]
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

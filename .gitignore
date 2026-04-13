@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Rust build artifacts
+target/
+**/target/
+
+# Next.js build
+frontend/.next/
+frontend/out/
+
+# Foundry artifacts
+contracts/out/
+contracts/cache/
+contracts/lib/
+
+# Environment files with secrets
+backend/.env
+frontend/.env.local
+.env
+
+# Broadcast (optional — keep run-latest for reference)
+contracts/broadcast/
+
+# OS
+.DS_Store
