@@ -1,66 +1,33 @@
-## Foundry
+# VeilFi Contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Solidity contracts for VeilFi, built with Foundry.
 
-Foundry consists of:
+## Contracts
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+| Contract | Description |
+|---|---|
+| `VeilVault.sol` | Main vault — ERC-7984 confidential shares, ERC-7540 async redeem, Aave V3 yield |
+| `WrappedConfidentialUSDC.sol` | Wraps ERC-20 USDC into a confidential ERC-7984 token |
+| `interfaces/IAavePool.sol` | Minimal Aave V3 pool interface |
 
-## Documentation
+## Setup
 
-https://book.getfoundry.sh/
+Uses npm packages for iExec Nox dependencies (not forge install):
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+npm install
+forge build
 ```
 
-### Test
+## Deploy
 
-```shell
-$ forge test
+```bash
+PRIVATE_KEY=0x... forge script script/Deploy.s.sol \
+  --rpc-url https://sepolia-rollup.arbitrum.io/rpc \
+  --broadcast
 ```
 
-### Format
+## Deployed (Arbitrum Sepolia)
 
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- VeilVault: `0x4e2097d3Ad9C6530728Cf74bf0838D4A2043D743`
+- WrappedConfidentialUSDC: `0x9cbc4779f608f4AA8c6871D25C28297B0783547c`
