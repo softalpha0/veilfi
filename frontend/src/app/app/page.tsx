@@ -61,6 +61,14 @@ export default function AppPage() {
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#030712]/90 backdrop-blur-xl px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 text-gray-500 hover:text-gray-300 transition-colors text-sm"
+            >
+              <span>←</span>
+              <span className="hidden sm:inline">Home</span>
+            </Link>
+            <div className="w-px h-5 bg-gray-800" />
             <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-900/40">
                 V
