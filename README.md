@@ -3,8 +3,7 @@
 > *Earn yield. Stay invisible.*
 
 **VeilFi** is a confidential DeFi vault built on [iExec Nox TEE](https://docs.iex.ec/nox-protocol) that lets you earn real yield from Aave V3 while keeping your entire position — size, entry, and exit — completely hidden on-chain.
-
-Built for the **iExec Vibe Coding Challenge** on DoraHacks.
+Nope
 
 ---
 
@@ -155,43 +154,6 @@ veilfi/
 
 ---
 
-## Running Locally
-
-### Prerequisites
-
-- Node.js 18+
-- Rust (stable)
-- Foundry (`curl -L https://foundry.paradigm.xyz | bash`)
-
-### Contracts
-
-```bash
-cd contracts
-npm install
-forge build
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-cp .env.local.example .env.local   # add your addresses
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000)
-
-### Backend
-
-```bash
-cd backend
-cp .env.example .env   # add RPC_URL, PRIVATE_KEY, contract addresses
-cargo run
-```
-
----
-
 ## How to Use (Testnet)
 
 1. Add **Arbitrum Sepolia** to MetaMask (chainId: 421614)
@@ -200,16 +162,6 @@ cargo run
 4. Go to `/app` → connect wallet → **Deposit** USDC
 5. Your position appears as `🔒 Encrypted` — no one on-chain can read the amount
 6. Switch to **Redeem** → enter shares → wait ~60s for Nox TEE → receive USDC + yield
-
----
-
-## Why TEE and not FHE?
-
-Fully Homomorphic Encryption (FHE) allows computation on encrypted data without a trusted executor — but it comes with massive computational overhead and limited EVM compatibility.
-
-iExec Nox uses **TEE (Trusted Execution Environments)** via Intel SGX — a different privacy model where a secure hardware enclave performs the decryption. The enclave is physically isolated: even the machine's owner cannot inspect memory inside it. Intel's remote attestation provides cryptographic proof that the code running inside the enclave is exactly what was deployed.
-
-For a yield vault, TEE is the right trade-off: near-instant decryption, full EVM compatibility, and hardware-enforced privacy guarantees backed by Intel SGX attestation.
 
 ---
 
