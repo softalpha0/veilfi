@@ -40,9 +40,7 @@ function UserBalance() {
       <div className="w-px h-8 bg-gray-700" />
       <div className="flex flex-col items-end">
         <span className="text-xs text-gray-500">Vault Shares</span>
-        <span className="text-violet-300 font-semibold text-sm flex items-center gap-1">
-          <span>🔒</span> Encrypted
-        </span>
+        <span className="text-violet-300 font-semibold text-sm">Encrypted</span>
       </div>
     </div>
   );
@@ -108,12 +106,11 @@ export default function AppPage() {
         {/* Protocol badges */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: "Privacy", value: "Nox TEE", icon: "🔒" },
-            { label: "Yield", value: "Aave V3", icon: "📈" },
-            { label: "Token", value: "ERC-7984", icon: "🪙" },
-          ].map(({ label, value, icon }) => (
+            { label: "Privacy", value: "Nox TEE" },
+            { label: "Yield", value: "Aave V3" },
+            { label: "Token", value: "ERC-7984" },
+          ].map(({ label, value }) => (
             <div key={label} className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-gray-900/60 border border-gray-800 text-center">
-              <span className="text-lg">{icon}</span>
               <span className="text-xs text-gray-500">{label}</span>
               <span className="text-xs font-semibold text-white">{value}</span>
             </div>
@@ -122,7 +119,6 @@ export default function AppPage() {
 
         {/* Tab switcher + forms */}
         <div className="flex flex-col gap-4">
-          {/* Tabs */}
           <div className="flex gap-1 p-1 rounded-xl bg-gray-900 border border-gray-800 w-fit">
             {(["deposit", "redeem"] as Tab[]).map((t) => (
               <button
@@ -134,7 +130,7 @@ export default function AppPage() {
                     : "text-gray-500 hover:text-gray-300"
                 }`}
               >
-                {t === "deposit" ? "⬇ Deposit" : "⬆ Redeem"}
+                {t === "deposit" ? "Deposit" : "Redeem"}
               </button>
             ))}
           </div>
@@ -144,7 +140,7 @@ export default function AppPage() {
 
         {/* Privacy notice */}
         <div className="flex items-start gap-3 p-4 rounded-xl bg-violet-950/30 border border-violet-900/40">
-          <span className="text-violet-400 text-lg flex-shrink-0">🔐</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-1.5 flex-shrink-0" />
           <div className="flex flex-col gap-1">
             <span className="text-sm font-semibold text-violet-200">Your position is private</span>
             <p className="text-xs text-violet-300/60 leading-relaxed">

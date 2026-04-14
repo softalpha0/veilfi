@@ -31,7 +31,6 @@ export default function Home() {
 
         {/* Hero */}
         <section className="relative overflow-hidden">
-          {/* Background glow */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-violet-600/10 rounded-full blur-[120px]" />
           </div>
@@ -77,11 +76,11 @@ export default function Home() {
             {/* Feature pills */}
             <div className="flex flex-wrap justify-center gap-3 mt-4">
               {[
-                "🔒 Encrypted positions",
-                "💰 Real Aave yield",
-                "⚡ Intel SGX TEE",
-                "🔗 ERC-7984 standard",
-                "✅ Zero mocks",
+                "Encrypted positions",
+                "Real Aave yield",
+                "Intel SGX TEE",
+                "ERC-7984 standard",
+                "Zero mocks",
               ].map((f) => (
                 <span key={f} className="px-3 py-1.5 rounded-full bg-gray-900 border border-gray-800 text-gray-400 text-xs">
                   {f}
@@ -105,7 +104,6 @@ export default function Home() {
               {[
                 {
                   step: "01",
-                  icon: "💵",
                   title: "Deposit USDC",
                   desc: "Approve and deposit USDC. The vault pulls your tokens in a single transaction.",
                   color: "from-violet-500/20 to-violet-500/5",
@@ -113,7 +111,6 @@ export default function Home() {
                 },
                 {
                   step: "02",
-                  icon: "📈",
                   title: "Aave earns yield",
                   desc: "Your USDC is immediately supplied to Aave V3. Real yield accrues every block.",
                   color: "from-blue-500/20 to-blue-500/5",
@@ -121,7 +118,6 @@ export default function Home() {
                 },
                 {
                   step: "03",
-                  icon: "🔒",
                   title: "Shares encrypted",
                   desc: "ERC-7984 confidential shares are issued via iExec Nox TEE. No one can read your balance.",
                   color: "from-green-500/20 to-green-500/5",
@@ -129,18 +125,14 @@ export default function Home() {
                 },
                 {
                   step: "04",
-                  icon: "🏦",
                   title: "Redeem privately",
                   desc: "Submit an encrypted request. Nox TEE decrypts in a secure enclave. Receive USDC + yield.",
                   color: "from-orange-500/20 to-orange-500/5",
                   border: "border-orange-800/40",
                 },
-              ].map(({ step, icon, title, desc, color, border }) => (
-                <div key={step} className={`relative flex flex-col gap-4 p-6 rounded-2xl bg-gradient-to-b ${color} border ${border}`}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl">{icon}</span>
-                    <span className="text-xs font-bold text-gray-600 font-mono">{step}</span>
-                  </div>
+              ].map(({ step, title, desc, color, border }) => (
+                <div key={step} className={`flex flex-col gap-4 p-6 rounded-2xl bg-gradient-to-b ${color} border ${border}`}>
+                  <span className="text-xs font-bold text-gray-500 font-mono tracking-widest">{step}</span>
                   <h3 className="font-bold text-white text-lg leading-snug">{title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
                 </div>
@@ -161,23 +153,19 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                icon: "🎯",
                 title: "Stop being a target",
                 desc: "Public balances let anyone identify high-value wallets. Encrypted positions remove you from the target list entirely.",
               },
               {
-                icon: "🤫",
                 title: "Position privacy",
-                desc: "Nobody knows when you entered, how much you hold, or when you're about to exit. Not bots, not competitors, not anyone.",
+                desc: "Nobody knows when you entered, how much you hold, or when you are about to exit. Not bots, not competitors, not anyone.",
               },
               {
-                icon: "💎",
                 title: "Same yield, full privacy",
                 desc: "You get the exact same Aave V3 yield as anyone else — no compromise, no privacy tax. Aave earns; you stay invisible.",
               },
-            ].map(({ icon, title, desc }) => (
+            ].map(({ title, desc }) => (
               <div key={title} className="flex flex-col gap-4 p-6 rounded-2xl border border-gray-800 bg-gray-900/40 hover:border-gray-700 transition-colors">
-                <span className="text-3xl">{icon}</span>
                 <h3 className="font-bold text-white text-lg">{title}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
               </div>
@@ -200,7 +188,6 @@ export default function Home() {
                 {
                   name: "iExec Nox TEE",
                   tag: "Confidential Compute",
-                  icon: "⚙️",
                   desc: "Intel SGX Trusted Execution Environment. Processes encrypted data inside a secure hardware enclave — even node operators cannot inspect the plaintext. Handles encrypted minting, balance tracking, and decryption proofs.",
                   badge: "Privacy Layer",
                   badgeColor: "bg-violet-900/50 text-violet-300 border-violet-800",
@@ -208,7 +195,6 @@ export default function Home() {
                 {
                   name: "ERC-7984",
                   tag: "Confidential Token Standard",
-                  icon: "🔐",
                   desc: "The on-chain standard for encrypted fungible tokens. Vault shares are euint256 handles — the balance on-chain is an encrypted value only readable by the TEE and the share holder.",
                   badge: "Token Standard",
                   badgeColor: "bg-blue-900/50 text-blue-300 border-blue-800",
@@ -216,20 +202,16 @@ export default function Home() {
                 {
                   name: "Aave V3",
                   tag: "Yield Source",
-                  icon: "📊",
                   desc: "The most trusted lending protocol in DeFi. All deposited USDC is supplied to Aave V3 on Arbitrum Sepolia. Yield accrues every block and is distributed proportionally on redemption.",
                   badge: "Yield Layer",
                   badgeColor: "bg-green-900/50 text-green-300 border-green-800",
                 },
-              ].map(({ name, tag, icon, desc, badge, badgeColor }) => (
+              ].map(({ name, tag, desc, badge, badgeColor }) => (
                 <div key={name} className="flex flex-col gap-5 p-6 rounded-2xl border border-gray-800 bg-gray-900/50 hover:border-gray-700 transition-colors">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{icon}</span>
-                      <div>
-                        <h3 className="font-bold text-white text-lg leading-none">{name}</h3>
-                        <span className="text-xs text-gray-500">{tag}</span>
-                      </div>
+                    <div>
+                      <h3 className="font-bold text-white text-lg leading-none">{name}</h3>
+                      <span className="text-xs text-gray-500">{tag}</span>
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full border ${badgeColor} flex-shrink-0`}>
                       {badge}
@@ -318,7 +300,7 @@ export default function Home() {
           </div>
           <div className="relative max-w-xl mx-auto flex flex-col items-center gap-6">
             <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
-              Ready to earn<br />
+              Ready to earn{" "}
               <span className="bg-gradient-to-r from-violet-400 to-violet-600 bg-clip-text text-transparent">
                 invisibly?
               </span>
