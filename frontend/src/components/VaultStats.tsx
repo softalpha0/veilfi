@@ -6,15 +6,6 @@ import { VEIL_VAULT_ABI } from "@/lib/veilVaultAbi";
 import { VAULT_ADDRESS } from "@/lib/wagmi";
 import { formatUnits } from "viem";
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col gap-1 p-4 rounded-xl bg-gray-900 border border-gray-800">
-      <span className="text-xs text-gray-500 uppercase tracking-wider">{label}</span>
-      <span className="text-2xl font-bold text-white font-mono">{value}</span>
-    </div>
-  );
-}
-
 export function VaultStats() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -32,24 +23,55 @@ export function VaultStats() {
   });
 
   const fmt = (v?: bigint) =>
-    v !== undefined ? `$${parseFloat(formatUnits(v, 6)).toLocaleString()}` : "—";
+    v !== undefined
+      ? `$${parseFloat(formatUnits(v, 6)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : "—";
 
   const yieldEarned =
     totalAssets !== undefined && totalDeposited !== undefined && totalAssets > totalDeposited
       ? totalAssets - totalDeposited
-      : undefined;
+      : BigInt(0);
+
+  const hasYield = yieldEarned > BigInt(0);
 
   if (!mounted) return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
-      {[1,2,3].map(i => <div key={i} className="h-20 rounded-xl bg-gray-900 border border-gray-800 animate-pulse" />)}
+    <div className="grid grid-cols-3 gap-3 w-full">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="h-24 rounded-xl bg-gray-900 border border-gray-800 animate-pulse" />
+      ))}
     </div>
   );
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
-      <Stat label="Total Assets in Aave" value={fmt(totalAssets)} />
-      <Stat label="Total Deposited"       value={fmt(totalDeposited)} />
-      <Stat label="Yield Earned"          value={fmt(yieldEarned)} />
+    <div className="grid grid-cols-3 gap-3 w-full">
+      {/* Total Assets */}
+      <div className="flex flex-col gap-2 p-4 rounded-xl bg-gray-900 border border-gray-800">
+        <span className="text-xs text-gray-500 uppercase tracking-wider">Total in Aave</span>
+        <span className="text-xl font-bold text-white font-mono">{fmt(totalAssets)}</span>
+        <span className="text-xs text-gray-600">Earning yield</span>
+      </div>
+
+      {/* Total Deposited */}
+      <div className="flex flex-col gap-2 p-4 rounded-xl bg-gray-900 border border-gray-800">
+        <span className="text-xs text-gray-500 uppercase tracking-wider">Deposited</span>
+        <span className="text-xl font-bold text-white font-mono">{fmt(totalDeposited)}</span>
+        <span className="text-xs text-gray-600">Principal</span>
+      </div>
+
+      {/* Yield Earned */}
+      <div className={`flex flex-col gap-2 p-4 rounded-xl border transition-colors ${
+        hasYield
+          ? "bg-green-950/30 border-green-900/60"
+          : "bg-gray-900 border-gray-800"
+      }`}>
+        <span className="text-xs text-gray-500 uppercase tracking-wider">Yield Earned</span>
+        <span className={`text-xl font-bold font-mono ${hasYield ? "text-green-400" : "text-white"}`}>
+          {hasYield ? fmt(yieldEarned) : "$0.00"}
+        </span>
+        <span className="text-xs text-gray-600">
+          {hasYield ? "↑ Accruing" : "Accruing..."}
+        </span>
+      </div>
     </div>
   );
 }
