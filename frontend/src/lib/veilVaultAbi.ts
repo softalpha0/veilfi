@@ -54,7 +54,30 @@ export const VEIL_VAULT_ABI = [
     ],
     outputs: [],
   },
+  // Selective disclosure
+  {
+    name: "grantAuditorAccess",
+    type: "function",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "auditor", type: "address" }],
+    outputs: [],
+  },
+  {
+    name: "encryptedBalanceOf",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "holder", type: "address" }],
+    outputs: [{ name: "", type: "bytes32" }],
+  },
   // Events
+  {
+    name: "AuditorAccessGranted",
+    type: "event",
+    inputs: [
+      { name: "user",    type: "address", indexed: true },
+      { name: "auditor", type: "address", indexed: true },
+    ],
+  },
   {
     name: "Deposited",
     type: "event",

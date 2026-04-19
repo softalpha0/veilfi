@@ -13,11 +13,11 @@ export const wagmiConfig = createConfig({
 // Deployed on Arbitrum Sepolia
 export const VAULT_ADDRESS: `0x${string}` =
   (process.env.NEXT_PUBLIC_VAULT_ADDRESS as `0x${string}`) ??
-  "0x4e2097d3Ad9C6530728Cf74bf0838D4A2043D743";
+  "0xa6c86c13ebc37cea6626cb55c68151b93ba02c72";
 
 export const WRAPPED_USDC_ADDRESS: `0x${string}` =
   (process.env.NEXT_PUBLIC_WRAPPED_USDC_ADDRESS as `0x${string}`) ??
-  "0x9cbc4779f608f4AA8c6871D25C28297B0783547c";
+  "0x8bd6036a82a265aff9ae71db195739d54d386da0";
 
 export const USDC_ADDRESS: `0x${string}` =
   "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d";

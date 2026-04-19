@@ -7,11 +7,12 @@ import { formatUnits } from "viem";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { DepositForm } from "@/components/DepositForm";
 import { RedeemForm } from "@/components/RedeemForm";
+import { DisclosureForm } from "@/components/DisclosureForm";
 import { VaultStats } from "@/components/VaultStats";
 import { USDC_ABI } from "@/lib/veilVaultAbi";
 import { USDC_ADDRESS, VAULT_ADDRESS } from "@/lib/wagmi";
 
-type Tab = "deposit" | "redeem";
+type Tab = "deposit" | "redeem" | "disclose";
 
 function UserBalance() {
   const { address } = useAccount();
@@ -119,23 +120,25 @@ export default function AppPage() {
 
         {/* Tab switcher + forms */}
         <div className="flex flex-col gap-4">
-          <div className="flex gap-1 p-1 rounded-xl bg-gray-900 border border-gray-800 w-fit">
-            {(["deposit", "redeem"] as Tab[]).map((t) => (
+          <div className="flex gap-1 p-1 rounded-xl bg-gray-900 border border-gray-800 w-fit flex-wrap">
+            {(["deposit", "redeem", "disclose"] as Tab[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`px-6 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
+                className={`px-5 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
                   tab === t
-                    ? "bg-violet-600 text-white shadow-lg shadow-violet-900/40"
+                    ? t === "disclose"
+                      ? "bg-blue-700 text-white shadow-lg shadow-blue-900/40"
+                      : "bg-violet-600 text-white shadow-lg shadow-violet-900/40"
                     : "text-gray-500 hover:text-gray-300"
                 }`}
               >
-                {t === "deposit" ? "Deposit" : "Redeem"}
+                {t === "deposit" ? "Deposit" : t === "redeem" ? "Redeem" : "Disclose"}
               </button>
             ))}
           </div>
 
-          {tab === "deposit" ? <DepositForm /> : <RedeemForm />}
+          {tab === "deposit" ? <DepositForm /> : tab === "redeem" ? <RedeemForm /> : <DisclosureForm />}
         </div>
 
         {/* Privacy notice */}
@@ -146,7 +149,9 @@ export default function AppPage() {
             <p className="text-xs text-violet-300/60 leading-relaxed">
               {tab === "deposit"
                 ? "Share amounts are encrypted by the Nox SDK before reaching the chain. No one can determine how much you deposited or what your balance is."
-                : "Redemption amounts are encrypted client-side and decrypted inside an Intel SGX enclave. The plaintext never appears on-chain."}
+                : tab === "redeem"
+                ? "Redemption amounts are encrypted client-side and decrypted inside an Intel SGX enclave. The plaintext never appears on-chain."
+                : "Selective disclosure uses Nox.allow() to grant one specific address read access to your encrypted balance handle — nobody else can decrypt it."}
             </p>
           </div>
         </div>
@@ -157,7 +162,7 @@ export default function AppPage() {
           <div className="flex flex-col gap-3">
             {[
               ["VeilVault", VAULT_ADDRESS],
-              ["WrappedConfidentialUSDC", "0x9cbc4779f608f4AA8c6871D25C28297B0783547c"],
+              ["WrappedConfidentialUSDC", "0x8bd6036a82a265aff9ae71db195739d54d386da0"],
             ].map(([label, addr]) => (
               <div key={addr} className="flex flex-col gap-1">
                 <span className="text-xs text-gray-500">{label}</span>

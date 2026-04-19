@@ -64,7 +64,7 @@ export default function Home() {
                 Launch App →
               </Link>
               <a
-                href="https://sepolia.arbiscan.io/address/0x4e2097d3Ad9C6530728Cf74bf0838D4A2043D743"
+                href="https://sepolia.arbiscan.io/address/0xa6c86c13ebc37cea6626cb55c68151b93ba02c72"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-4 rounded-xl border border-gray-700 hover:border-gray-500 hover:bg-white/5 text-gray-300 font-semibold text-lg transition-all"
@@ -229,8 +229,8 @@ export default function Home() {
               </h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 {[
-                  ["VeilVault", "0x4e2097d3Ad9C6530728Cf74bf0838D4A2043D743"],
-                  ["WrappedConfidentialUSDC (ERC-7984)", "0x9cbc4779f608f4AA8c6871D25C28297B0783547c"],
+                  ["VeilVault", "0xa6c86c13ebc37cea6626cb55c68151b93ba02c72"],
+                  ["WrappedConfidentialUSDC (ERC-7984)", "0x8bd6036a82a265aff9ae71db195739d54d386da0"],
                   ["USDC (testnet)", "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d"],
                   ["Aave V3 Pool", "0xBfC91D59fdAA134A4ED45f7B584cAf96D7792Eff"],
                 ].map(([label, addr]) => (

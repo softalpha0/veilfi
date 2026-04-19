@@ -27,14 +27,16 @@ import {IAavePool} from "./interfaces/IAavePool.sol";
 contract VeilVault is ERC7984, Ownable {
     using SafeERC20 for IERC20;
 
-    // ── ERC-7540 events ──────────────────────────────────────────────────────
+    // ── Events ───────────────────────────────────────────────────────────────
     event Deposited(address indexed depositor, uint256 assets);
     event RedeemRequested(address indexed owner, euint256 burnHandle);
     event RedeemFinalized(address indexed receiver, uint256 assets);
+    event AuditorAccessGranted(address indexed user, address indexed auditor);
 
     // ── Errors ───────────────────────────────────────────────────────────────
     error ZeroAmount();
     error InvalidRedeemRequest(euint256 burnHandle);
+    error NoSharesHeld();
 
     // ── Immutables ───────────────────────────────────────────────────────────
     IERC20     public immutable USDC;
@@ -182,6 +184,27 @@ contract VeilVault is ERC7984, Ownable {
     ///      Used only for proportional yield calculation — not exposed as a public view.
     function _plainTotalSupply() internal view returns (uint256) {
         return totalDeposited;
+    }
+
+    // ── Selective Disclosure ──────────────────────────────────────────────────
+
+    /// @notice Grant a specific address the ability to read your encrypted vault balance.
+    ///         The auditor can then use the Nox SDK to decrypt the handle and verify
+    ///         your position without it being exposed to anyone else on-chain.
+    /// @param  auditor  Wallet address to grant read access (e.g. a regulator or auditor)
+    function grantAuditorAccess(address auditor) external {
+        require(auditor != address(0), "VeilVault: zero address");
+        euint256 bal = confidentialBalanceOf(msg.sender);
+        if (!Nox.isInitialized(bal)) revert NoSharesHeld();
+        Nox.allow(bal, auditor);
+        emit AuditorAccessGranted(msg.sender, auditor);
+    }
+
+    /// @notice Returns the encrypted balance handle for a given holder.
+    ///         Auditors who have been granted access via grantAuditorAccess can
+    ///         pass this handle to the Nox SDK to decrypt and verify the balance.
+    function encryptedBalanceOf(address holder) external view returns (euint256) {
+        return confidentialBalanceOf(holder);
     }
 
     // ── Emergency ─────────────────────────────────────────────────────────────
