@@ -9,6 +9,7 @@ import { DepositForm } from "@/components/DepositForm";
 import { RedeemForm } from "@/components/RedeemForm";
 import { DisclosureForm } from "@/components/DisclosureForm";
 import { VaultStats } from "@/components/VaultStats";
+import { AIAssistant } from "@/components/AIAssistant";
 import { USDC_ABI } from "@/lib/veilVaultAbi";
 import { USDC_ADDRESS, VAULT_ADDRESS } from "@/lib/wagmi";
 
@@ -179,6 +180,8 @@ export default function AppPage() {
           </div>
         </div>
       </main>
+
+      <AIAssistant />
 
       <footer className="border-t border-white/5 py-5 px-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
