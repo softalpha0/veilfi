@@ -7,23 +7,58 @@ interface Message {
   content: string;
 }
 
-const SYSTEM_PROMPT = `You are the VeilFi AI assistant — a concise, helpful guide for users of VeilFi, a confidential yield vault on Arbitrum Sepolia.
+// Prepended to every question so ChainGPT knows the VeilFi context
+const CONTEXT_PREFIX = `You are the VeilFi AI assistant. Answer only about VeilFi and DeFi/privacy topics. Be concise.
 
-Key facts about VeilFi:
-- Users deposit USDC, which is supplied to Aave V3 to earn real yield
-- Vault shares are issued as encrypted ERC-7984 tokens — nobody on-chain can see a user's balance or position size
-- Privacy is powered by iExec Nox TEE (Intel SGX trusted execution environment) — NOT zero-knowledge proofs or FHE
-- The Nox SDK encrypts share amounts client-side before they hit the chain
-- Redeeming: user sends encrypted share amount → Nox TEE decrypts off-chain inside the SGX enclave → generates a cryptographic proof → finalizeRedeem verifies the proof and withdraws USDC + yield from Aave
-- TEE decryption typically takes 30 seconds to 2 minutes
-- Selective disclosure: users can call grantAuditorAccess(address) to let a specific wallet read their encrypted balance handle — useful for regulators, auditors, or proving your position to someone you trust
-- ERC-7984 is the encrypted token standard used for confidential balances
-- ERC-7540 is the async vault standard (request → finalize flow)
-- Deployed on Arbitrum Sepolia (testnet) for the iExec Vibe Coding Challenge hackathon
-- VeilVault contract: 0xa6c86c13ebc37cea6626cb55c68151b93ba02c72
-- WrappedConfidentialUSDC: 0x8bd6036a82a265aff9ae71db195739d54d386da0
+VeilFi facts:
+- Confidential yield vault on Arbitrum Sepolia
+- Users deposit USDC → supplied to Aave V3 for real yield
+- Shares are encrypted ERC-7984 tokens (euint256 handles) via iExec Nox TEE (Intel SGX) — NOT ZK or FHE
+- Deposit amount is plaintext; share balance is fully encrypted on-chain
+- Redeem flow: encrypt shares → requestRedeem → Nox TEE decrypts off-chain (30s–2min) → finalizeRedeem verifies TEE proof → USDC+yield sent to wallet
+- Selective disclosure: grantAuditorAccess(address) lets one specific wallet read your encrypted balance
+- VeilVault: 0xa6c86c13ebc37cea6626cb55c68151b93ba02c72 | wcUSDC: 0x8bd6036a82a265aff9ae71db195739d54d386da0
+- Shares use 6 decimals (10 USDC = 10,000,000 shares)
 
-Keep answers short and clear. If asked about something unrelated to VeilFi or DeFi privacy, politely redirect.`;
+User question: `;
+
+async function callChainGPT(
+  question: string,
+  history: Message[],
+  apiKey: string,
+): Promise<string> {
+  // Build conversation context from history (skip greeting message)
+  const historyContext = history
+    .filter((m) => m.role !== "assistant" || history.indexOf(m) > 0)
+    .slice(-6) // last 3 exchanges
+    .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
+    .join("\n");
+
+  const fullQuestion = historyContext
+    ? `${CONTEXT_PREFIX}${question}\n\nPrevious conversation:\n${historyContext}`
+    : `${CONTEXT_PREFIX}${question}`;
+
+  const res = await fetch("https://api.chaingpt.org/chat/stream", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "general_assistant",
+      question: fullQuestion,
+      chatHistory: "off",
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`API error ${res.status}: ${body}`);
+  }
+
+  const data = await res.json();
+  return data?.data?.bot ?? "Sorry, I couldn't get a response.";
+}
 
 export function AIAssistant() {
   const [open, setOpen]         = useState(false);
@@ -48,14 +83,11 @@ export function AIAssistant() {
   }, [messages, loading]);
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
+    if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
-  const send = async () => {
-    const text = input.trim();
-    if (!text || loading) return;
+  const submitQuestion = async (text: string) => {
+    if (!text.trim() || loading) return;
 
     const apiKey = process.env.NEXT_PUBLIC_CHAINGPT_API_KEY;
     if (!apiKey) {
@@ -70,63 +102,7 @@ export function AIAssistant() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://api.chaingpt.org/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "cgpt-4o",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...newMessages.map((m) => ({ role: m.role, content: m.content })),
-          ],
-          stream: false,
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`API error ${res.status}: ${body}`);
-      }
-
-      const data = await res.json();
-      const reply: string = data?.choices?.[0]?.message?.content ?? "Sorry, I couldn't get a response.";
-      setMessages([...newMessages, { role: "assistant", content: reply }]);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Request failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const sendQuestion = async (q: string) => {
-    const apiKey = process.env.NEXT_PUBLIC_CHAINGPT_API_KEY;
-    if (!apiKey) { setError("ChainGPT API key not configured."); return; }
-    setError(null);
-    const newMessages: Message[] = [...messages, { role: "user", content: q }];
-    setMessages(newMessages);
-    setLoading(true);
-    try {
-      const res = await fetch("https://api.chaingpt.org/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "cgpt-4o",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...newMessages.map((m) => ({ role: m.role, content: m.content })),
-          ],
-          stream: false,
-        }),
-      });
-      if (!res.ok) throw new Error(`API error ${res.status}`);
-      const data = await res.json();
-      const reply: string = data?.choices?.[0]?.message?.content ?? "Sorry, I couldn't get a response.";
+      const reply = await callChainGPT(text, messages, apiKey);
       setMessages([...newMessages, { role: "assistant", content: reply }]);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Request failed");
@@ -138,7 +114,7 @@ export function AIAssistant() {
   const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      send();
+      submitQuestion(input);
     }
   };
 
@@ -156,13 +132,11 @@ export function AIAssistant() {
                     }`}
       >
         {open ? (
-          /* X icon */
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         ) : (
-          /* Sparkle / AI icon */
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1z"/>
             <path d="M12 19a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1z"/>
@@ -178,11 +152,12 @@ export function AIAssistant() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)]
-                        bg-[#0d1117] border border-gray-800 rounded-2xl shadow-2xl shadow-black/60
-                        flex flex-col overflow-hidden"
-             style={{ height: "480px" }}>
-
+        <div
+          className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)]
+                     bg-[#0d1117] border border-gray-800 rounded-2xl shadow-2xl shadow-black/60
+                     flex flex-col overflow-hidden"
+          style={{ height: "480px" }}
+        >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-gray-900/60">
             <div className="flex items-center gap-2">
@@ -204,10 +179,7 @@ export function AIAssistant() {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3 text-sm">
             {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+              <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[85%] px-3 py-2 rounded-xl leading-relaxed whitespace-pre-wrap break-words ${
                   msg.role === "user"
                     ? "bg-violet-600 text-white rounded-br-sm"
@@ -241,17 +213,13 @@ export function AIAssistant() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Suggested questions (only if only 1 message = greeting) */}
-          {messages.length === 1 && (
+          {/* Suggested questions */}
+          {messages.length === 1 && !loading && (
             <div className="px-3 pb-2 flex flex-wrap gap-1.5">
-              {[
-                "How does the TEE work?",
-                "How do I redeem?",
-                "What is selective disclosure?",
-              ].map((q) => (
+              {["How does the TEE work?", "How do I redeem?", "What is selective disclosure?"].map((q) => (
                 <button
                   key={q}
-                  onClick={() => sendQuestion(q)}
+                  onClick={() => submitQuestion(q)}
                   className="text-[11px] px-2.5 py-1 rounded-full border border-gray-700
                              text-gray-400 hover:text-violet-300 hover:border-violet-700 transition"
                 >
@@ -277,7 +245,7 @@ export function AIAssistant() {
                            outline-none disabled:opacity-50"
               />
               <button
-                onClick={send}
+                onClick={() => submitQuestion(input)}
                 disabled={!input.trim() || loading}
                 className="text-violet-400 hover:text-violet-300 disabled:opacity-30 transition flex-shrink-0"
                 aria-label="Send"
