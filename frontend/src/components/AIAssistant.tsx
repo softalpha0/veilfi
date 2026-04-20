@@ -56,8 +56,16 @@ async function callChainGPT(
     throw new Error(`API error ${res.status}: ${body}`);
   }
 
-  const data = await res.json();
-  return data?.data?.bot ?? "Sorry, I couldn't get a response.";
+  const text = await res.text();
+
+  // Response may be plain text (streaming) or JSON { data: { bot: "..." } }
+  try {
+    const data = JSON.parse(text);
+    return data?.data?.bot ?? data?.bot ?? text;
+  } catch {
+    // Plain text stream — use directly
+    return text.trim() || "Sorry, I couldn't get a response.";
+  }
 }
 
 export function AIAssistant() {
