@@ -6,6 +6,7 @@ import { parseGwei, decodeEventLog } from "viem";
 import { createViemHandleClient } from "@iexec-nox/handle";
 import { VEIL_VAULT_ABI } from "@/lib/veilVaultAbi";
 import { VAULT_ADDRESS } from "@/lib/wagmi";
+import { Web3MailReceipt } from "@/components/Web3MailReceipt";
 
 const GAS = {
   maxFeePerGas:         parseGwei("0.1"),
@@ -353,6 +354,9 @@ export function RedeemForm() {
             >
               View on Arbiscan →
             </a>
+          )}
+          {txHash && address && (
+            <Web3MailReceipt txHash={txHash} receiverAddress={address} />
           )}
           <button onClick={reset} className="text-sm text-gray-400 hover:text-white transition">
             Redeem more →

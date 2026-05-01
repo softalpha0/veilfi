@@ -159,7 +159,21 @@ export default function AppPage() {
 
         {/* Contracts */}
         <div className="p-5 rounded-2xl border border-gray-800 bg-gray-900/30 flex flex-col gap-4">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Deployed Contracts</h2>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Deployed Contracts</h2>
+            <a
+              href={`https://explorer.iex.ec/arbitrum-sepolia-testnet/search?query=${VAULT_ADDRESS}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border border-gray-700
+                         text-gray-400 hover:text-white hover:border-gray-500 transition"
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+              iExec Explorer ↗
+            </a>
+          </div>
           <div className="flex flex-col gap-3">
             {[
               ["VeilVault", VAULT_ADDRESS],
