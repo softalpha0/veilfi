@@ -5,7 +5,8 @@ import { IExecWeb3mail } from "@iexec/web3mail";
 
 declare global {
   interface Window {
-    ethereum?: unknown;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ethereum?: any;
   }
 }
 
