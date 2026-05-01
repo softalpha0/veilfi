@@ -3,6 +3,12 @@
 import { useState } from "react";
 import { IExecWeb3mail } from "@iexec/web3mail";
 
+declare global {
+  interface Window {
+    ethereum?: unknown;
+  }
+}
+
 interface Props {
   txHash: string;
   receiverAddress: string;
