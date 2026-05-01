@@ -69,7 +69,11 @@ Your position was fully private throughout — encrypted by iExec Nox TEE.
 
       setStatus("done");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to send email";
+      const msg = err instanceof Error
+        ? err.message
+        : typeof err === "string"
+        ? err
+        : JSON.stringify(err);
       setError(msg);
       setStatus("error");
     }
